@@ -13,6 +13,9 @@ var authService = {
   refresh: function() {
     return api.post('/auth/refresh')
   },
+  me: function() {
+    return api.get('/auth/me')
+  },
 }
 
 export default authService

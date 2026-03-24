@@ -47,16 +47,17 @@ export function AuthProvider(props) {
 
     authService.refresh()
       .then(function() {
-        // Se chegou aqui é porque há um refresh token válido.
-        // O usuário estava logado — porém não temos os dados sem um endpoint /me.
-        // Por ora apenas marca como "sessão ativa sem dados completos".
-        // Quando implementar /me, chamar aqui e popular o user.
-        setLoading(false)
-      })
+      return authService.me()
+    })
+      .then(function(meResponse) {
+      setUser(meResponse.data)
+    })
       .catch(function() {
-        setUser(null)
-        setLoading(false)
-      })
+      setUser(null)
+    })
+      .finally(function() {
+      setLoading(false)
+    })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   var login = useCallback(function(email, password) {
@@ -65,9 +66,11 @@ export function AuthProvider(props) {
         // O back-end não retorna o user no body (apenas 200 OK).
         // Guardamos o email e derivamos o role de forma temporária.
         // Ao implementar endpoint /me, popular aqui com dados reais.
-        var userData = { email: email }
-        setUser(userData)
-        return response
+        return authService.me()
+          .then(function(meResponse) {
+            setUser(meResponse.data)
+            return response
+        })
       })
   }, [])
 
