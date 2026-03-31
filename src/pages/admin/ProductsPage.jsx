@@ -93,7 +93,7 @@ function ProductCard(props) {
         React.createElement(Icon, { name: 'tag', className: 'w-3.5 h-3.5 text-surface-400' }),
         React.createElement(
           'span',
-          { className: 'font-mono text-sm font-semibold text-brand-700' },
+          { className: 'font-mono text-sm font-medium text-brand-700' },
           formatCurrency(product.price)
         )
       ),
