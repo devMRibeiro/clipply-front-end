@@ -5,7 +5,7 @@ var AuthContext = createContext(null)
 
 // O estado do usuário é derivado do JWT que vive no cookie HttpOnly.
 // Como não temos acesso direto ao cookie, guardamos apenas os dados
-// decodificados que o back-end retorna (via endpoint /me futuro) ou
+// decodificados que o back-end retorna (via endpoint /me) ou
 // que persistimos no sessionStorage apenas com dados não-sensíveis.
 var SESSION_KEY = 'clipply_user'
 
@@ -63,9 +63,6 @@ export function AuthProvider(props) {
   var login = useCallback(function(email, password) {
     return authService.login(email, password)
       .then(function(response) {
-        // O back-end não retorna o user no body (apenas 200 OK).
-        // Guardamos o email e derivamos o role de forma temporária.
-        // Ao implementar endpoint /me, popular aqui com dados reais.
         return authService.me()
           .then(function(meResponse) {
             setUser(meResponse.data)
@@ -81,17 +78,27 @@ export function AuthProvider(props) {
       })
   }, [])
 
+  // Chamado após troca de senha no primeiro acesso para atualizar firstAccess
+  var refreshUser = useCallback(function() {
+    return authService.me()
+      .then(function(meResponse) {
+        setUser(meResponse.data)
+      })
+  }, [])
+ 
   var value = {
-    user: user,
-    loading: loading,
-    login: login,
-    logout: logout,
+    user:            user,
+    loading:         loading,
+    login:           login,
+    logout:          logout,
+    refreshUser:     refreshUser,
     isAuthenticated: user !== null,
+    isFirstAccess:     user !== null && user.isFirstAccess === true,
   }
-
+ 
   return React.createElement(AuthContext.Provider, { value: value }, children)
 }
-
+ 
 export function useAuth() {
   var ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth deve ser usado dentro de AuthProvider')

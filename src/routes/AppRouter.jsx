@@ -5,6 +5,7 @@ import PrivateRoute          from '../components/auth/PrivateRoute.jsx'
 import AppLayout             from '../components/layout/AppLayout.jsx'
 
 import LoginPage             from '../pages/auth/LoginPage.jsx'
+import FirstAccessPage       from '../pages/auth/FirstAccessPage.jsx'
 import NotFoundPage          from '../pages/NotFoundPage.jsx'
 
 // Admin
@@ -31,6 +32,19 @@ function AppRouter() {
 
     // ── Pública: Login ────────────────────────────────────
     React.createElement(Route, { path: '/login', element: React.createElement(LoginPage) }),
+
+    // ── Protegida: Primeiro acesso ────────────────────────
+    // Acessível por qualquer usuário autenticado no primeiro acesso.
+    // O PrivateRoute garante que só usuários logados chegam aqui.
+    // O PrivateRoute também redireciona para cá quando firstAccess=true.
+    React.createElement(Route, {
+      path: '/first-access',
+      element: React.createElement(
+        PrivateRoute,
+        null,
+        React.createElement(FirstAccessPage)
+      ),
+    }),
 
     // ── Públicas: Agendamento por slug ────────────────────
     React.createElement(Route, { path: '/:slug', element: React.createElement(BookingPage) }),

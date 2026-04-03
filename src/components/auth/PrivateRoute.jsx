@@ -9,6 +9,7 @@ function PrivateRoute(props) {
   var authCtx  = useAuth()
   var loading  = authCtx.loading
   var isAuthenticated = authCtx.isAuthenticated
+  var isFirstAccess = authCtx.isFirstAccess
   var location = useLocation()
 
   if (loading) {
@@ -19,6 +20,14 @@ function PrivateRoute(props) {
     return React.createElement(Navigate, {
       to: '/login',
       state: { from: location },
+      replace: true,
+    })
+  }
+
+  // Se é primeiro acesso e ainda não está na tela de troca de senha, redireciona
+  if (isFirstAccess && location.pathname !== '/first-access') {
+    return React.createElement(Navigate, {
+      to:      '/first-access',
       replace: true,
     })
   }
